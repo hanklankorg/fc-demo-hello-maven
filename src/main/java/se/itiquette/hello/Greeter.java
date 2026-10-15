@@ -6,6 +6,12 @@ public final class Greeter {
 
   /** Returns a greeting for the world. */
   public static String greet() {
-    return "Hello, world!";
+    return greet("world");
+  }
+
+  /** Returns a greeting for the name given, or for the world when it is blank. */
+  public static String greet(String name) {
+    String who = name == null || name.isBlank() ? "world" : name.strip();
+    return "Hello, " + who + "!";
   }
 }

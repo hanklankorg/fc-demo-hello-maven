@@ -9,4 +9,14 @@ class GreeterTest {
   void greetsTheWorld() {
     assertEquals("Hello, world!", Greeter.greet());
   }
+
+  @Test
+  void greetsByName() {
+    assertEquals("Hello, Ada!", Greeter.greet(" Ada "));
+  }
+
+  @Test
+  void greetsTheWorldForABlankName() {
+    assertEquals("Hello, world!", Greeter.greet("  "));
+  }
 }
