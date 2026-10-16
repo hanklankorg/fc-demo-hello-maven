@@ -1,0 +1,32 @@
+# SPDX-FileCopyrightText: 2026 Itiquette
+# SPDX-License-Identifier: CC0-1.0
+
+# The pull-request gate: Nanolinter with its floor, and the Maven build and
+# tests, through Forge CI's pull-request orchestrator.
+name: Pull Request Workflow
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pr-checks:
+    uses: hanklankorg/fc-forge-ci/.github/workflows/pullrequest-orchestrator.yml@13393e104e49ae8c63048fef11260b1acb2509de
+    permissions:
+      actions: read
+      contents: read
+    with:
+      forge-ci-binary-ref: v0.90.0-pre
+      project-type: maven
+      lint-engine: nanolinter
+      # The trial names a mirror of the Java flavour here.
+      nanolinter-image: ghcr.io/hanklankorg/nanolinter@sha256:7dc6cd3697a56513bda22c6e8fd2ce6cc3758e7e8132966a72264645ddddd4a8
+      runtime-image: ghcr.io/hanklankorg/forge-ci-runtime-base:sha-13393e1
