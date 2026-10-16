@@ -27,4 +27,6 @@ jobs:
       forge-ci-binary-ref: v0.90.0
       project-type: maven
       lint-engine: nanolinter
+      # The trial names a mirror of the Java flavour here.
+      nanolinter-image: codefloe.com/itiquette/nanolinter:java
       runtime-image: ghcr.io/diggsweden/forge-ci-runtime-base:v0.90.0
