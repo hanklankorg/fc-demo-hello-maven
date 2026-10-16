@@ -4,8 +4,12 @@
 # Forge CI pull-request gate for a Maven application. No job receives a
 # secret or installs anything:
 #
+#   lint            nanolinter.toml's plan with the secrets,sast floor
 #   trust-boundary  statically verifies release.yml's secret boundaries
 #   build           mvn tests and package, with the action the release uses
+#
+# lint and build run in CI_JOB_IMAGE: a nanolinter image of the java flavour
+# (nanolinter, its check tools, a JDK and Maven), pinned by digest.
 name: Pull Request
 
 on:
@@ -21,8 +25,26 @@ env:
   GIT_CONFIG_VALUE_0: '*'
 
 jobs:
+  lint:
+    name: "Check: lint"
+    runs-on: ${{ vars.CI_RUNNER_LABEL }}
+    container:
+      image: ${{ vars.CI_JOB_IMAGE }}
+    timeout-minutes: 15
+    steps:
+      # fetch-base brings main for the commit-range and diff checks.
+      - name: Checkout repository
+        uses: https://forgejo.example/diggsweden/forge-ci/.forgejo/actions/checkout-consumer@2f4e845cee96973d1082bf00a5a18689c1482148
+        with:
+          fetch-base: main
+
+      # nanolinter.toml's plan with the secrets,sast floor. Forgejo ingests no
+      # SARIF, so the findings are in this step's log.
+      - name: Lint
+        uses: https://forgejo.example/diggsweden/forge-ci/.forgejo/actions/lint-nanolinter@2f4e845cee96973d1082bf00a5a18689c1482148
+
   trust-boundary:
-    name: Release isolation gate
+    name: "Check: release isolation"
     runs-on: ${{ vars.CI_RUNNER_LABEL }}
     timeout-minutes: 10
     steps:
@@ -41,7 +63,7 @@ jobs:
           dist-digest-output: dist-digest
 
   build:
-    name: Build and test
+    name: "Check: build and test"
     runs-on: ${{ vars.CI_RUNNER_LABEL }}
     container:
       image: ${{ vars.CI_JOB_IMAGE }}

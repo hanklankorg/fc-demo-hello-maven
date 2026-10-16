@@ -52,7 +52,7 @@ jobs:
 
   # Ours: tests, jar and Build SBOM into dist/. No signing key reaches it.
   build:
-    name: Build release artifacts
+    name: "Build: release files"
     needs: prepare
     runs-on: ${{ vars.CI_RUNNER_LABEL }}
     container:
@@ -112,7 +112,7 @@ jobs:
           path: dist/
 
   sign-and-publish:
-    name: Sign release assets and publish
+    name: Sign and publish
     needs: [prepare, build]
     # job-graph-guard: allow reason="reads needs.prepare.outputs but is gated on needs.build.result=='success'; build needs prepare, so build can only succeed if prepare succeeded, making prepare.outputs always present"
     if: ${{ always() && needs.build.result == 'success' }}
